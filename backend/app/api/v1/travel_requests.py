@@ -28,11 +28,10 @@ async def create_travel_request(
     current_user: Employee = Depends(get_current_user),
 ):
     """Create a new travel request."""
-    # Generate travel request ID: TR-YYYY-XXX
+    # Generate travel request ID: TR-YYYY-XXX (globally unique)
     year = datetime.now().year
     count_result = await db.execute(
         select(func.count()).where(
-            TravelRequest.employee_id == current_user.emp_code,
             TravelRequest.travel_request_id.like(f"TR-{year}-%"),
         )
     )

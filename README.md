@@ -161,3 +161,51 @@ Once the backend is running, visit:
 ## License
 
 Internal use only - Nortex Industries
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Step 1: Deploy Backend on Render
+1. Go to render.com (https://render.com) → New → Web Service
+2. Connect your GitHub repo: tej-shahade5/nortax_travel_ass
+3. Settings:
+- Name: nortex-travel-api
+- Runtime: Python
+- Root Directory: backend
+- Build Command: pip install -r requirements.txt
+- Start Command: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+4. Add Environment Variables:
+Key	Value
+DATABASE_URL	Your Neon connection string (from earlier)
+JWT_SECRET	Any random string (e.g. my-super-secret-key-123)
+CORS_ORIGINS	https://your-netlify-url.netlify.app (fill after Step 2)
+5. Click Create Web Service → Copy the URL (e.g. https://nortex-travel-api.onrender.com)
+
+
+
+Step 2: Deploy Frontend on Netlify
+1. Go to netlify.com (https://netlify.com) → Add new site → Import an existing project
+2. Connect your GitHub repo: tej-shahade5/nortax_travel_ass
+3. Settings:
+- Base directory: frontend
+- Build command: npm run build
+- Publish directory: dist
+4. Add Environment variable:
+Key	Value
+VITE_API_URL	https://nortex-travel-api.onrender.com/api/v1 (your Render URL)
+5. Click Deploy site
+Step 3: Update CORS on Render
+After Netlify gives you a URL, go back to Render → Environment → Edit → Update CORS_ORIGINS to your Netlify URL, then redeploy.
+Login credentials (same as before):
+- Admin: admin@nortexindustries.com / NX-0001
+- Employee: chaitanya.reddy@nortexindustries.com / NX-4471

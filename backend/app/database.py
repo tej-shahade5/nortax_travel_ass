@@ -12,20 +12,15 @@ def _prepare_db_url(url: str) -> tuple[str, dict]:
     elif url.startswith("postgres://"):
         url = "postgresql+asyncpg://" + url[len("postgres://"):]
 
-    # Parse and extract query params
+    # Parse URL and extract sslmode before stripping all query params
     parsed = urlparse(url)
-    params = dict(parse_qs(parsed.query, keep_blank_values=True))
+    params = parse_qs(parsed.query)
+    sslmode = params.get("sslmode", [None])[0]
 
-    # Pop sslmode since asyncpg doesn't accept it as a query param
-    sslmode = params.pop("sslmode", None)
-    if isinstance(sslmode, list):
-        sslmode = sslmode[0]
+    # Strip ALL query params — asyncpg doesn't accept any of them
+    clean_url = urlunparse(parsed._replace(query=""))
 
-    # Rebuild URL without sslmode
-    new_query = "&".join(f"{k}={v[0]}" for k, v in params.items())
-    clean_url = urlunparse(parsed._replace(query=new_query))
-
-    # Build asyncpg connect_args for SSL
+    # asyncpg uses connect_args for SSL, not query params
     connect_args = {}
     if sslmode == "require":
         connect_args["ssl"] = "require"
